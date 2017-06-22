@@ -296,6 +296,7 @@ void ACTIVE_TASK::init_app_init_data(APP_INIT_DATA& aid) {
 int ACTIVE_TASK::write_app_init_file(APP_INIT_DATA& aid) {
     FILE *f;
     char init_data_path[MAXPATHLEN];
+    MIOFILE mf;
 
 #if 0
     msg_printf(wup->project, MSG_INFO,
@@ -317,8 +318,13 @@ int ACTIVE_TASK::write_app_init_file(APP_INIT_DATA& aid) {
         );
         return ERR_FOPEN;
     }
+    
+    mf.init_file(f);    
 
     int retval = write_init_data_file(f, aid);
+
+    gstate.net_stats.write(mf);
+
     fclose(f);
     return retval;
 }
