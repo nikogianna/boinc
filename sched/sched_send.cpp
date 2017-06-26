@@ -150,7 +150,10 @@ void WORK_REQ::get_job_limits() {
             n = project_prefs.max_cpus;
         }
     }
-    ninstances[PROC_TYPE_CPU] = n;
+    if (project_prefs.max_jobs_in_progress)
+        ninstances[PROC_TYPE_CPU] = project_prefs.max_jobs_in_progress;
+    else ninstances[PROC_TYPE_CPU] = n;
+
     effective_ncpus = n;
 
     effective_ngpus = 0;
@@ -171,7 +174,10 @@ void WORK_REQ::get_job_limits() {
         if (effective_ngpus) effective_ngpus = 1;
     }
 
-    if (config.max_wus_to_send) {
+    if (project_prefs.max_jobs_in_progress) {
+        g_wreq->max_jobs_per_rpc = project_prefs.max_jobs_in_progress;
+    }
+    else if (config.max_wus_to_send) {
         g_wreq->max_jobs_per_rpc = mult * config.max_wus_to_send;
     } else {
         g_wreq->max_jobs_per_rpc = 999999;
